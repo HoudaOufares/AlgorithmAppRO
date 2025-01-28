@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('Images/logo-emsi.png', 'Images')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -1,3 +1,5 @@
+import os
+import sys
 import tkinter as tk
 from tkinter import ttk
 from config.settings import GUI_SETTINGS
@@ -13,6 +15,15 @@ class GraphApp:
         self.root.config(bg=GUI_SETTINGS['BACKGROUND_COLOR'])
         self.create_main_frame()
 
+    def get_image_path(self, filename):
+        """ Récupère le chemin correct de l'image, que ce soit en mode script ou en mode exécutable """
+        if getattr(sys, '_MEIPASS', False):  # Vérifie si PyInstaller est utilisé
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, "Images", filename)
+
     def create_main_frame(self):
         # Efface d'abord tous les widgets existants
         for widget in self.root.winfo_children():
@@ -26,11 +37,20 @@ class GraphApp:
         )
         navbar.pack(side="top", fill="x")
 
-        logo = tk.PhotoImage(file="C:/RO/logo.png")
-        logo = logo.subsample(2, 2)
-        logo_label = tk.Label(navbar, image=logo, bg=GUI_SETTINGS['FRAME_COLOR'])
-        logo_label.image = logo
-        logo_label.pack(side="left", padx=10, pady=5)
+        # Chargement du logo
+        logo_path = self.get_image_path("logo-emsi.png")
+        if os.path.exists(logo_path):
+            logo = tk.PhotoImage(file=logo_path)
+            logo = logo.subsample(4, 4)
+        else:
+            print(f"⚠️ Erreur : Image non trouvée à {logo_path}")
+            logo = None  # Image par défaut
+
+        # Affichage du logo uniquement si l'image est valide
+        if logo:
+            logo_label = tk.Label(navbar, image=logo, bg=GUI_SETTINGS['FRAME_COLOR'])
+            logo_label.image = logo
+            logo_label.pack(side="left", padx=10, pady=5)
 
         noms_frame = tk.Frame(navbar, bg=GUI_SETTINGS['FRAME_COLOR'])
         noms_frame.pack(side="right", padx=10, pady=5)
@@ -172,3 +192,5 @@ class GraphApp:
             command=self.create_main_frame
         )
         btn_retour.pack(pady=20)
+
+# --- Fin du Code ---
